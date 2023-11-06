@@ -1,0 +1,11 @@
+../Core/Src/fsm_traffic.c:42:6:clearAllLED	8	static
+../Core/Src/fsm_traffic.c:51:6:run_traffic	8	static
+../Core/Src/fsm_traffic.c:116:6:update7SEG	16	static
+../Core/Src/fsm_traffic.c:144:6:set_up_led_buffer	16	static
+../Core/Src/fsm_traffic.c:151:6:display_4LED	8	static
+../Core/Src/fsm_traffic.c:157:6:blinking_led	16	static
+../Core/Src/fsm_traffic.c:161:6:checkButton	8	static
+../Core/Src/fsm_traffic.c:181:6:normal_mode	8	static
+../Core/Src/fsm_traffic.c:189:6:modify_mode	8	static
+../Core/Src/fsm_traffic.c:194:6:fsm	8	static
+../Core/Src/fsm_traffic.c:201:6:init	8	static

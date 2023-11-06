@@ -1,0 +1,4 @@
+../Core/Src/button.c:24:5:isButtonPress	16	static
+../Core/Src/button.c:36:5:isButtonLongPress	16	static
+../Core/Src/button.c:46:6:button_process	16	static
+../Core/Src/button.c:53:6:button_reading	16	static

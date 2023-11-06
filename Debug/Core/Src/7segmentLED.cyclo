@@ -1,0 +1,3 @@
+../Core/Src/7segmentLED.c:18:6:displayNumber	1
+../Core/Src/7segmentLED.c:28:6:clearDisplay7Seg	1
+../Core/Src/7segmentLED.c:38:6:display7Seg	11
