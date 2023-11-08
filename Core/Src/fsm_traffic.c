@@ -31,7 +31,7 @@ GPIO_TypeDef* en_port[4] ={EN0_GPIO_Port,EN1_GPIO_Port, EN2_GPIO_Port, EN3_GPIO_
 uint16_t en_pin[4] = {EN0_Pin,EN1_Pin, EN2_Pin, EN3_Pin};
 
 // for display the led
-int led_buffer[4] ={1,2,3,4};
+int led_buffer[4] ={0,0,0,0};
 // for change the led
 int dumb_val[4] = {0,0,0,0};
 // current mode
@@ -53,56 +53,54 @@ void run_traffic(){
 	switch(current_state){
 		case RED1_GREEN2:
 			HAL_GPIO_WritePin(YELLOW1_GPIO_Port, YELLOW1_Pin, 1);
-			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 1);
 			HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 0);
+			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 1);
 			HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, 0);
-			if(road1_timer <= 0){
+			if(road1_timer < 0){
 				current_state = RED1_YELLOW2;
 				road1_timer = RED_TIME;
 			}
-			if(road2_timer <= 0){
+			if(road2_timer < 0){
 				current_state = RED1_YELLOW2;
 				road2_timer = YELLOW_TIME;
 			}
 			break;
 		case RED1_YELLOW2:
-			HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 1);
 			HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, 1);
 			HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 0);
 			HAL_GPIO_WritePin(YELLOW2_GPIO_Port,YELLOW2_Pin, 0);
-			if(road1_timer <= 0){
+			if(road1_timer < 0){
 				current_state = GREEN1_RED2;
 				road1_timer = GREEN_TIME;
 			}
-			if(road2_timer <= 0){
+			if(road2_timer < 0){
 				current_state = GREEN1_RED2;
 				road2_timer = RED_TIME;
 			}
 			break;
 		case GREEN1_RED2:
 			HAL_GPIO_WritePin(YELLOW1_GPIO_Port, YELLOW1_Pin, 1);
-			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 1);
 			HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, 0);
 			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 0);
-			if(road1_timer <= 0){
+			if(road1_timer < 0){
 				current_state = YELLOW1_RED2;
 				road1_timer = YELLOW_TIME;
 			}
-			if(road2_timer <= 0){
+			if(road2_timer < 0){
 				current_state = YELLOW1_RED2;
 				road2_timer = RED_TIME;
 			}
 			break;
 		case YELLOW1_RED2:
 			HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 1);
-			HAL_GPIO_WritePin(YELLOW2_GPIO_Port,YELLOW2_Pin, 1);
 			HAL_GPIO_WritePin(YELLOW1_GPIO_Port, YELLOW1_Pin, 0);
+			HAL_GPIO_WritePin(YELLOW2_GPIO_Port,YELLOW2_Pin, 1);
 			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 0);
-			if(road1_timer <= 0){
+			if(road1_timer < 0){
 				current_state = RED1_GREEN2;
 				road1_timer = RED_TIME;
 			}
-			if(road2_timer <= 0){
+			if(road2_timer < 0){
 				current_state = RED1_GREEN2;
 				road2_timer = GREEN_TIME;
 			}
@@ -154,7 +152,7 @@ void display_4LED(){
 	if(led_index > 3) led_index = 0;
 }
 
-void blinking_led(int index){
+void blinking_led_mode(int index){
 	HAL_GPIO_TogglePin(led1_array_port[mode], led1_array_pin[mode]);
 	HAL_GPIO_TogglePin(led2_array_port[mode], led2_array_pin[mode]);
 }
@@ -178,24 +176,24 @@ void checkButton(){
 		dumb_val[mode] = 0;
 	}
 }
-void normal_mode(){
-	run_traffic();
-	set_up_led_buffer(road1_timer,road2_timer);
-	road1_timer--;
-	road2_timer--;
+void run_led_traffic(){
+	if(isModify == 0){
+		set_up_led_buffer(road1_timer,road2_timer);
+		road1_timer--;
+		road2_timer--;
+	}
 }
 
-
 void modify_mode(){
-	blinking_led(mode);
-	set_up_led_buffer(time_array[mode] + dumb_val[mode], mode);
+	if(isModify != 0)
+		blinking_led_mode(mode);
 }
 
 void fsm(){
 	if(isModify == 0)
-		normal_mode();
+		run_traffic();
 	else {
-		modify_mode();
+		set_up_led_buffer(time_array[mode] + dumb_val[mode], mode);
 	}
 }
 void init(){
@@ -205,7 +203,7 @@ void init(){
 	clearAllLED();
 	road1_timer = RED_TIME;
 	road2_timer = GREEN_TIME;
-	normal_mode();
+	run_traffic();
 	HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, 1);
 	HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, 1);
 	HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, 1);

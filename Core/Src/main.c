@@ -99,11 +99,16 @@ int main(void)
   setTimer1(100);
   setTimer2(25);
   setTimer3(10);
+  setTimer4(50);
   while (1)
   {
 	  if(timer1_flag == 1){
-		  fsm();
+		  run_led_traffic();
 		  setTimer1(100);
+	  }
+	  if(timer4_flag == 1){
+		 modify_mode();
+		 setTimer4(50);
 	  }
 	  if(timer2_flag == 1){
 		  display_4LED();
@@ -111,6 +116,7 @@ int main(void)
 	  }
 	  if(timer3_flag == 1){
 		  checkButton();
+		  fsm();
 		  setTimer3(10);
 	  }
     /* USER CODE END WHILE */

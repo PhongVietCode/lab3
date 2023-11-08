@@ -18,4 +18,6 @@ void init();
 void fsm();
 void display_4LED();
 void checkButton();
+void run_led_traffic();
+void modify_mode();
 #endif /* INC_FSM_TRAFFIC_H_ */
