@@ -52,55 +52,49 @@ void run_traffic(){
 	clearAllLED();
 	switch(current_state){
 		case RED1_GREEN2:
-			HAL_GPIO_WritePin(YELLOW1_GPIO_Port, YELLOW1_Pin, 1);
 			HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 0);
-			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 1);
 			HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, 0);
-			if(road1_timer < 0){
+			if(road1_timer <= 0){
 				current_state = RED1_YELLOW2;
 				road1_timer = RED_TIME;
 			}
-			if(road2_timer < 0){
+			if(road2_timer <= 0){
 				current_state = RED1_YELLOW2;
 				road2_timer = YELLOW_TIME;
 			}
 			break;
 		case RED1_YELLOW2:
-			HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, 1);
 			HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 0);
 			HAL_GPIO_WritePin(YELLOW2_GPIO_Port,YELLOW2_Pin, 0);
-			if(road1_timer < 0){
+			if(road1_timer <= 0){
 				current_state = GREEN1_RED2;
 				road1_timer = GREEN_TIME;
 			}
-			if(road2_timer < 0){
+			if(road2_timer <= 0){
 				current_state = GREEN1_RED2;
 				road2_timer = RED_TIME;
 			}
 			break;
 		case GREEN1_RED2:
-			HAL_GPIO_WritePin(YELLOW1_GPIO_Port, YELLOW1_Pin, 1);
 			HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, 0);
 			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 0);
-			if(road1_timer < 0){
+			if(road1_timer <= 0){
 				current_state = YELLOW1_RED2;
 				road1_timer = YELLOW_TIME;
 			}
-			if(road2_timer < 0){
+			if(road2_timer <= 0){
 				current_state = YELLOW1_RED2;
 				road2_timer = RED_TIME;
 			}
 			break;
 		case YELLOW1_RED2:
-			HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 1);
 			HAL_GPIO_WritePin(YELLOW1_GPIO_Port, YELLOW1_Pin, 0);
-			HAL_GPIO_WritePin(YELLOW2_GPIO_Port,YELLOW2_Pin, 1);
 			HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 0);
-			if(road1_timer < 0){
+			if(road1_timer <= 0){
 				current_state = RED1_GREEN2;
 				road1_timer = RED_TIME;
 			}
-			if(road2_timer < 0){
+			if(road2_timer <= 0){
 				current_state = RED1_GREEN2;
 				road2_timer = GREEN_TIME;
 			}
@@ -156,13 +150,28 @@ void blinking_led_mode(int index){
 	HAL_GPIO_TogglePin(led1_array_port[mode], led1_array_pin[mode]);
 	HAL_GPIO_TogglePin(led2_array_port[mode], led2_array_pin[mode]);
 }
+int checkValid(){
+	return (time_array[0] == time_array[1] + time_array[2]);
+}
 void checkButton(){
 	if(isButtonPress(0)){
 		mode++;
 		mode%=3;
 		isModify++;
 		isModify%=4;
-		if(isModify == 0) mode = -1;
+		if(isModify == 0){
+			mode = -1;
+			if(checkValid() == 1){
+				RED_TIME = time_array[0];
+				YELLOW_TIME = time_array[1];
+				GREEN_TIME = time_array[2];
+			}
+			else{
+				time_array[0] = RED_TIME;
+				time_array[1] = YELLOW_TIME;
+				time_array[2] = GREEN_TIME;
+			}
+		}
 		clearAllLED();
 	}
 	if(isButtonPress(1)){
@@ -170,17 +179,15 @@ void checkButton(){
 	}
 	if(isButtonPress(2)){
 		time_array[mode] += dumb_val[mode];
-		RED_TIME = time_array[0];
-		YELLOW_TIME = time_array[1];
-		GREEN_TIME = time_array[2];
+
 		dumb_val[mode] = 0;
 	}
 }
 void run_led_traffic(){
 	if(isModify == 0){
-		set_up_led_buffer(road1_timer,road2_timer);
 		road1_timer--;
 		road2_timer--;
+		set_up_led_buffer(road1_timer,road2_timer);
 	}
 }
 
